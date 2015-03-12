@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', 1);
+ini_set('display_erros',1);
 include_once('japanese.php');
 
 $cate_mem_api = 'http://media.cs.inf.shizuoka.ac.jp/api.php?format=json&action=query&list=categorymembers&cmlimit=max&cmtitle=Category:';
@@ -26,27 +26,6 @@ function formatBody($str){
 	$str = preg_replace('/\[\[.+?\]\]/u', '', $str);
 	$str = preg_replace('/<<.+?>>/u', '', $str);
 	return $str;
-}
-function parseBody($pdf, $str){
-	$e = 'SJIS';
-	$l = mb_strlen($str, $e);
-	if($l > 900){
-		$h = 7;
-	}else if($l > 800){
-		$h = 8;
-	}else if($l > 700){
-		$h = 9;
-	}
-	for($i = 0; $i < $l; $i++) {
-		$c = mb_substr($str, $i, 1, $e);
-		if($c=='　'){
-			$pdf->Ln();
-			$pdf->Write($h,"　");
-		}else{
-			$pdf->Write($h,$c);
-		}
-	}
-	return;
 }
 
 foreach($cate_mem_array->{'query'}->{'categorymembers'} as $key => $value){
@@ -99,10 +78,29 @@ foreach($page as $value){
 		$api = 0;
 	}
 
-	$body = toSJIS($value->{'body'});
 	$pdf->SetXY(20,42);
-	$pdf->SetFont('SJIS-hw', '', 14);
-	parseBody($pdf, $body);
+	$pdf->SetFont('SJIS-hw', '', 11);
+	$body = toSJIS($value->{'body'});
+	$len = mb_strlen($body, 'SJIS');
+	$let = 0;
+	for($i = 0; $i < $len; $i++) {
+		$c = mb_substr($body, $i, 1, 'SJIS');
+		if($let>=43 && ($c=='、' || $c=='。' || $c=='」' || $c=='”')){
+			$pdf->Cell(3.8, 6, $c, 0, 0);
+			$let++;
+		}else if($let>=44){
+			$pdf->Ln();
+			$pdf->Cell(3.8, 6, $c, 0, 0);
+			$let = 0;
+		}else if($c=='　'){
+			$pdf->Ln();
+			$pdf->Cell(3.8, 6, "", 0, 0);
+			$let = 0;
+		}else{
+			$pdf->Cell(3.8, 6, $c, 0, 0);
+			$let++;
+		}
+	}
 
 	$pdf->SetXY(16,267);
 	$pdf->SetFont('SJIS-hw', '', 22);
@@ -110,7 +108,7 @@ foreach($page as $value){
 
 	$author = toSJIS($value->{'author'});
 	$date = toSJIS($value->{'date'});
-	$author_date = 'Author:'.$author.'　Date:'.$date;
+	$author_date = 'Author:'.$author.'?@Date:'.$date;
 	$pdf->SetXY(12,282);
 	$pdf->SetFont('SJIS-hw', '', 16);
 	$pdf->SetTextColor(255-16);
@@ -125,5 +123,8 @@ function toSJIS($in_ConvStr,$in_BaseEncode = 'UTF-8'){
 }
 function toUTF8($in_ConvStr,$in_BaseEncode = 'SJIS'){
     return (mb_convert_encoding($in_ConvStr, "UTF-8", $in_BaseEncode));
+}
+function mb_str_split($text){
+	return preg_split("//u", $text, -1, PREG_SPLIT_NO_EMPTY);
 }
 ?>

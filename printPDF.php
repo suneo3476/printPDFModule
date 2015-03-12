@@ -49,8 +49,8 @@ $pdf->SetMargins(16,16,16);
 $pdf->SetAutoPageBreak(false,16);
 
 function cutTitle($str){
-	if(mb_strlen($str)>17)
-		return mb_substr($str,0,17)."..";
+	if(mb_strlen($str)>25)
+		return mb_substr($str,0,20)."..";
 	else
 		return $str;
 }
@@ -63,7 +63,7 @@ foreach($page as $value){
 
 	$title = toSJIS(cutTitle($value->{'title'}));
 	$pdf->SetXY(16,12);
-	$pdf->SetFont('SJIS-hw', '', 24);
+	$pdf->SetFont('SJIS-hw', '', 18);
 	$pdf->SetTextColor(0);
 	$pdf->Write(15,$title);
 
@@ -85,20 +85,27 @@ foreach($page as $value){
 	$let = 0;
 	for($i = 0; $i < $len; $i++) {
 		$c = mb_substr($body, $i, 1, 'SJIS');
+		if(preg_match("/^[a-zA-Z0-9,.:\"\?\!]$/u", $c)){
+			$w = 3.8/2;
+			$let_delta = 1.0/2;
+		}else{
+			$w = 3.8;
+			$let_delta = 1.0;
+		}
 		if($let>=43 && ($c=='、' || $c=='。' || $c=='」' || $c=='”')){
-			$pdf->Cell(3.8, 6, $c, 0, 0);
-			$let++;
+			$pdf->Cell($w, 6, $c, 0, 0);
+			$let += $let_delta;
 		}else if($let>=44){
 			$pdf->Ln();
-			$pdf->Cell(3.8, 6, $c, 0, 0);
+			$pdf->Cell($w, 6, $c, 0, 0);
 			$let = 0;
 		}else if($c=='　'){
 			$pdf->Ln();
-			$pdf->Cell(3.8, 6, "", 0, 0);
+			$pdf->Cell($w, 6, "", 0, 0);
 			$let = 0;
 		}else{
-			$pdf->Cell(3.8, 6, $c, 0, 0);
-			$let++;
+			$pdf->Cell($w, 6, $c, 0, 0);
+			$let += $let_delta;
 		}
 	}
 
@@ -108,7 +115,7 @@ foreach($page as $value){
 
 	$author = toSJIS($value->{'author'});
 	$date = toSJIS($value->{'date'});
-	$author_date = 'Author:'.$author.'?@Date:'.$date;
+	$author_date = 'Author:'.$author.'  Date:'.$date;
 	$pdf->SetXY(12,282);
 	$pdf->SetFont('SJIS-hw', '', 16);
 	$pdf->SetTextColor(255-16);
@@ -117,7 +124,6 @@ foreach($page as $value){
 $pdf->Output('mediacard-'.toSJIS($category).'.pdf', "I");
 
 $pdf->Close();
-
 function toSJIS($in_ConvStr,$in_BaseEncode = 'UTF-8'){
     return (mb_convert_encoding($in_ConvStr, "SJIS", $in_BaseEncode));
 }

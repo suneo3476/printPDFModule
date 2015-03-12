@@ -133,4 +133,10 @@ function toUTF8($in_ConvStr,$in_BaseEncode = 'SJIS'){
 function mb_str_split($text){
 	return preg_split("//u", $text, -1, PREG_SPLIT_NO_EMPTY);
 }
+/*Debug Print*/
+function dp($text){
+	echo '<pre>';
+	print_r($text);
+	echo '</pre>';
+}
 ?>

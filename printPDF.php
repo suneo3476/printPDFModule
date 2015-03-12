@@ -1,4 +1,5 @@
 <?php
+ini_set('display_errors', 1);
 include_once('japanese.php');
 
 $cate_mem_api = 'http://media.cs.inf.shizuoka.ac.jp/api.php?format=json&action=query&list=categorymembers&cmlimit=max&cmtitle=Category:';

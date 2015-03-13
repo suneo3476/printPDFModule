@@ -53,7 +53,7 @@ $pageno = $pdf->setSourceFile('template.pdf');
 
 $pdf->AddSJIShwFont();
 
-$pdf->SetMargins(16,16,16);
+$pdf->SetMargins(19,16,16);
 $pdf->SetAutoPageBreak(false,16);
 
 function cutTitle($str){
@@ -97,7 +97,7 @@ foreach($page as $value){
 		$api = 0;
 	}
 
-	$pdf->SetXY(20,42);
+	$pdf->SetXY(19,42);
 	$pdf->SetFont('SJIS-hw', '', 11);
 	$body = toSJIS($value->{'body'});
 	$len = mb_strlen($body, 'SJIS');
@@ -120,7 +120,6 @@ foreach($page as $value){
 			$let = 0;
 		}else if($c=='@'){
 			$pdf->Ln();
-			$pdf->Cell($w, 6, "", 0, 0, 'C');
 			$let = 0;
 		}else{
 			$pdf->Cell($w, 6, $c, 0, 0, 'C');

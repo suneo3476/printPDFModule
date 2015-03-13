@@ -104,7 +104,7 @@ foreach($page as $value){
 	$let = 0;
 	for($i = 0; $i < $len; $i++) {
 		$c = mb_substr($body, $i, 1, 'SJIS');
-		if(preg_match("/^[a-zA-Z0-9,.:\"\?\!]$/u", $c)){
+		if(preg_match('/^[a-zA-Z0-9,.:\"\?\!]$/u', $c)){
 			$w = 3.8/10*7;
 			$let_delta = 1.0/10*7;
 		}else{
@@ -112,18 +112,18 @@ foreach($page as $value){
 			$let_delta = 1.0;
 		}
 		if($let>=43 && ($c=='、' || $c=='。' || $c=='」' || $c=='”')){
-			$pdf->Cell($w, 6, $c, 0, 0);
+			$pdf->Cell($w, 6, $c, 0, 0, 'C');
 			$let += $let_delta;
 		}else if($let>=44){
 			$pdf->Ln();
-			$pdf->Cell($w, 6, $c, 0, 0);
+			$pdf->Cell($w, 6, $c, 0, 0, 'C');
 			$let = 0;
 		}else if($c=='　'){
 			$pdf->Ln();
-			$pdf->Cell($w, 6, "", 0, 0);
+			$pdf->Cell($w, 6, "", 0, 0, 'C');
 			$let = 0;
 		}else{
-			$pdf->Cell($w, 6, $c, 0, 0);
+			$pdf->Cell($w, 6, $c, 0, 0, 'C');
 			$let += $let_delta;
 		}
 	}

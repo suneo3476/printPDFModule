@@ -33,6 +33,12 @@ function extractBody($str){
 	$str = preg_replace('/<<.+?>>/u', '', $str);
 	return $str;
 }
+function cutTitle($str){
+	if(mb_strlen($str)>22)
+		return mb_substr($str,0,22)."..";
+	else
+		return $str;
+}
 
 foreach($cate_mem_array->{'query'}->{'categorymembers'} as $key => $value){
 	$cate_mem_pageid = $value->{'pageid'};
@@ -50,22 +56,14 @@ foreach($cate_mem_array->{'query'}->{'categorymembers'} as $key => $value){
 
 $pdf = new PDF_Japanese('P', 'mm', 'A4');
 $pageno = $pdf->setSourceFile('template.pdf');
-
 $pdf->AddSJIShwFont();
-
 $pdf->SetMargins(19,16,16);
 $pdf->SetAutoPageBreak(false,16);
 
-function cutTitle($str){
-	if(mb_strlen($str)>25)
-		return mb_substr($str,0,20)."..";
-	else
-		return $str;
-}
-
+/*make a PDF*/
 $api = 0;
 foreach($page as $value){
-	/*non-perfect is cont'd*/
+	/*non-perfect page will be cont'd*/
 	$contd_flag = false;
 	foreach($value->{'category'} as $key => $cat){
 		if($cat == toUTF8("‘‚«‚©‚¯") || $cat == toUTF8("”à")){
@@ -76,16 +74,17 @@ foreach($page as $value){
 		continue;
 	}
 
+	/*make a page*/
 	$pdf->AddPage();
 	$tplidx = $pdf->ImportPage(1);
 	$pdf->useTemplate($tplidx);
-
+	/*title*/
 	$title = toSJIS(cutTitle($value->{'title'}));
 	$pdf->SetXY(16,12);
 	$pdf->SetFont('SJIS-hw', '', 18);
 	$pdf->SetTextColor(0);
 	$pdf->Write(15,$title);
-
+	/*qrcode*/
 	$full_title = $value->{'full_title'};
 	$api_url = 'http://'.$api.'.chart.apis.google.com/chart?chs=240x240&cht=qr&chl=';
 	$target_url = 'http://media.cs.inf.shizuoka.ac.jp/index.php/'.urlencode($full_title);
@@ -96,7 +95,7 @@ foreach($page as $value){
 	if(++$api>9){
 		$api = 0;
 	}
-
+	/*body*/
 	$pdf->SetXY(19,42);
 	$pdf->SetFont('SJIS-hw', '', 11);
 	$body = toSJIS($value->{'body'});
@@ -126,11 +125,11 @@ foreach($page as $value){
 			$let += $let_delta;
 		}
 	}
-
+	/*category*/
 	$pdf->SetXY(16,267);
 	$pdf->SetFont('SJIS-hw', '', 22);
 	$pdf->Write(15,toSJIS($query_category));
-
+	/*author & date*/
 	$author = toSJIS($value->{'author'});
 	$date = toSJIS($value->{'date'});
 	$author_date = 'Author:'.$author.'  Date:'.$date;
@@ -139,9 +138,10 @@ foreach($page as $value){
 	$pdf->SetTextColor(255-16);
 	$pdf->Write(15,$author_date);
 }
+/*output a PDF*/
 $pdf->Output('mediacard-'.toSJIS($query_category).'.pdf', "I");
-
 $pdf->Close();
+
 function toSJIS($in_ConvStr,$in_BaseEncode = 'UTF-8'){
     return (mb_convert_encoding($in_ConvStr, "SJIS", $in_BaseEncode));
 }

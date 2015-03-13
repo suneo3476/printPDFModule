@@ -105,8 +105,8 @@ foreach($page as $value){
 	for($i = 0; $i < $len; $i++) {
 		$c = mb_substr($body, $i, 1, 'SJIS');
 		if(preg_match("/^[a-zA-Z0-9,.:\"\?\!]$/u", $c)){
-			$w = 3.8/2;
-			$let_delta = 1.0/2;
+			$w = 3.8/10*7;
+			$let_delta = 1.0/10*7;
 		}else{
 			$w = 3.8;
 			$let_delta = 1.0;

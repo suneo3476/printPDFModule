@@ -28,7 +28,7 @@ function extractCategory($str){
 function extractBody($str){
 	$str = mb_convert_kana($str,'s');
 	$str = preg_replace('/<\/?blockquote>/u', toUTF8('Å@'), $str);
-	$str = preg_replace('/\r\n|\r|\n{2,}/u', toUTF8('Å@'), $str);
+	$str = preg_replace('/\r\n|\r|\n{1,}/u', toUTF8('Å@'), $str);
 	$str = preg_replace('/\[\[.+?\]\]/u', '', $str);
 	$str = preg_replace('/<<.+?>>/u', '', $str);
 	return $str;

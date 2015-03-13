@@ -1,0 +1,35 @@
+commit 27e8db99faef775f930db1b8d32c7a52e74ad30e
+Author: Masato Fujimori <suneo3476@gmail.com>
+Date:   Fri Mar 13 00:04:21 2015 +0900
+
+    デバッグプリント関数を作った
+
+commit 220de1707291594a641ef32876dc880816ac816f
+Author: Masato Fujimori <suneo3476@gmail.com>
+Date:   Thu Mar 12 23:57:41 2015 +0900
+
+    半角英数の幅を自然に出力できるようにした
+
+commit 25ce5c84c57fd93e96a319cf51fea8752e0a73fd
+Author: Masato Fujimori <suneo3476@gmail.com>
+Date:   Thu Mar 12 23:25:26 2015 +0900
+
+    本文の記号による改行の違和感を少なくした（、。」”）
+
+commit 4a52a7965e475507e3958199fa5a674a823f45cc
+Author: Masato Fujimori <suneo3476@gmail.com>
+Date:   Thu Mar 12 22:31:49 2015 +0900
+
+    display_errorsをオンにした
+
+commit b8b221d66b0e8ac749362bfcbbe6a33eff62240f
+Author: Masato Fujimori <suneo3476@gmail.com>
+Date:   Wed Mar 11 00:35:00 2015 +0900
+
+    first commit
+
+commit b1ab403d797ad0330d10210a3524b6227f7a8fe8
+Author: Masato Fujimori <suneo3476@gmail.com>
+Date:   Wed Mar 11 00:22:03 2015 +0900
+
+    first commit

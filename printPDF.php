@@ -3,8 +3,8 @@ ini_set('display_erros',1);
 include_once('japanese.php');
 
 $cate_mem_api = 'http://media.cs.inf.shizuoka.ac.jp/api.php?format=json&action=query&list=categorymembers&cmlimit=max&cmtitle=Category:';
-$category = $_GET['category'];
-$cate_mem_call = $cate_mem_api.$category;
+$query_category = $_GET['category'];
+$cate_mem_call = $cate_mem_api.$query_category;
 $cate_mem_json = file_get_contents($cate_mem_call);
 $cate_mem_array = json_decode($cate_mem_json);
 
@@ -13,12 +13,17 @@ function extractAuthor($str){
 	return $matches[1][0];
 }
 function extractDate($str){
-	preg_match_all('/([0-9]{2,4}\.[0-9]{1,2}\.[0-9]{1,2}).$/u', $str, $matches);
+	preg_match_all('/(\d{2,4}\D\d{1,2}\D\d{1,2}\D?).$/u', $str, $matches);
+//	dp($matches);
 	return $matches[1][0];
 }
 function extractTitle($str){
 	preg_match_all('/^(\S+)\s/u', $str, $matches);
 	return $matches[1][0];
+}
+function extractCategory($str){
+	preg_match_all('/\[\[Category:(.+?)\]\]/u', $str, $matches);
+	return $matches[1];
 }
 function formatBody($str){
 	$str = mb_convert_kana($str,'s');
@@ -37,7 +42,9 @@ foreach($cate_mem_array->{'query'}->{'categorymembers'} as $key => $value){
 	$page->{$key}->{'author'} = extractAuthor($page->{$key}->{'full_title'});
 	$page->{$key}->{'date'} = extractDate($page->{$key}->{'full_title'});
 	$page->{$key}->{'title'} = extractTitle($page->{$key}->{'full_title'});
-	$page->{$key}->{'body'} = formatBody($page_array->{'query'}->{'pages'}->{$cate_mem_pageid}->{'revisions'}[0]->{'*'});
+	$raw_body = $page_array->{'query'}->{'pages'}->{$cate_mem_pageid}->{'revisions'}[0]->{'*'};
+	$page->{$key}->{'category'} = extractCategory($raw_body);
+	$page->{$key}->{'body'} = formatBody($raw_body);
 }
 
 $pdf = new PDF_Japanese('P', 'mm', 'A4');
@@ -57,6 +64,17 @@ function cutTitle($str){
 
 $api = 0;
 foreach($page as $value){
+	/*non-perfect is cont'd*/
+	$contd_flag = false;
+	foreach($value->{'category'} as $key => $cat){
+		if($cat == toUTF8("‘‚«‚©‚¯") || $cat == toUTF8("”à")){
+			$contd_flag = true;
+		}
+	}
+	if($contd_flag == true){
+		continue;
+	}
+
 	$pdf->AddPage();
 	$tplidx = $pdf->ImportPage(1);
 	$pdf->useTemplate($tplidx);
@@ -111,7 +129,7 @@ foreach($page as $value){
 
 	$pdf->SetXY(16,267);
 	$pdf->SetFont('SJIS-hw', '', 22);
-	$pdf->Write(15,toSJIS($category));
+	$pdf->Write(15,toSJIS($query_category));
 
 	$author = toSJIS($value->{'author'});
 	$date = toSJIS($value->{'date'});
@@ -121,7 +139,7 @@ foreach($page as $value){
 	$pdf->SetTextColor(255-16);
 	$pdf->Write(15,$author_date);
 }
-$pdf->Output('mediacard-'.toSJIS($category).'.pdf', "I");
+$pdf->Output('mediacard-'.toSJIS($query_category).'.pdf', "I");
 
 $pdf->Close();
 function toSJIS($in_ConvStr,$in_BaseEncode = 'UTF-8'){
@@ -138,5 +156,9 @@ function dp($text){
 	echo '<pre>';
 	print_r($text);
 	echo '</pre>';
+}
+/*get type and encoding of string*/
+function typeenc($str){
+	echo $str.":".gettype($str).":".mb_detect_encoding($str)."<br>";
 }
 ?>

@@ -73,7 +73,6 @@ foreach($page as $value){
 	if($contd_flag == true){
 		continue;
 	}
-
 	/*make a page*/
 	$pdf->AddPage();
 	$tplidx = $pdf->ImportPage(1);
@@ -89,9 +88,14 @@ foreach($page as $value){
 	$api_url = 'http://'.$api.'.chart.apis.google.com/chart?chs=240x240&cht=qr&chl=';
 	$target_url = 'http://media.cs.inf.shizuoka.ac.jp/index.php/'.urlencode($full_title);
 	$call_url = $api_url.$target_url;
-	$qrdata = file_get_contents($call_url);
-	file_put_contents('img/'.toSJIS($full_title).'.png', $qrdata);
-	$pdf->Image('img/'.toSJIS($full_title).'.png', 172,17, 21,21, PNG);
+	$img_path = 'img/'.toSJIS($full_title).'.png';
+	if(is_readable($img_path)==FALSE){
+		$qrdata = file_get_contents($call_url);
+		file_put_contents($img_path, $qrdata);
+	}else{
+		//mock-up
+	}
+	$pdf->Image($img_path, 172,17, 21,21, PNG);
 	if(++$api>9){
 		$api = 0;
 	}

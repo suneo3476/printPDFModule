@@ -33,6 +33,13 @@ function extractBody($str){
 	$str = preg_replace('/<<.+?>>/u', '', $str);
 	return $str;
 }
+function extractImagelink($str){
+	mb_regex_encoding('UTF-8');
+	preg_match_all('/\[\[File:(.+?)\|/u', $str, $matches_en);
+	preg_match_all('/\[\['.toUTF8('ƒtƒ@ƒCƒ‹').':(.+?)\|/u', $str, $matches_ja);
+	dp(array_merge($matches_ja[1],$matches_en[1]));
+	return array_merge($matches_ja[1],$matches_en[1]);
+}
 function cutTitle($str){
 	if(mb_strlen($str)>22)
 		return mb_substr($str,0,22)."..";
@@ -51,6 +58,7 @@ foreach($cate_mem_array->{'query'}->{'categorymembers'} as $key => $value){
 	$page->{$key}->{'title'} = extractTitle($page->{$key}->{'full_title'});
 	$raw_body = $page_array->{'query'}->{'pages'}->{$cate_mem_pageid}->{'revisions'}[0]->{'*'};
 	$page->{$key}->{'category'} = extractCategory($raw_body);
+	$page->{$key}->{'imagelink'} = extractImagelink($raw_body);
 	$page->{$key}->{'body'} = extractBody($raw_body);
 }
 

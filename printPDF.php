@@ -25,7 +25,7 @@ function extractCategory($str){
 	preg_match_all('/\[\[Category:(.+?)\]\]/u', $str, $matches);
 	return $matches[1];
 }
-function formatBody($str){
+function extractBody($str){
 	$str = mb_convert_kana($str,'s');
 	$str = preg_replace('/\r\n|\r|\n{2,}/u', toUTF8('@'), $str);
 	$str = preg_replace('/\[\[.+?\]\]/u', '', $str);
@@ -44,7 +44,7 @@ foreach($cate_mem_array->{'query'}->{'categorymembers'} as $key => $value){
 	$page->{$key}->{'title'} = extractTitle($page->{$key}->{'full_title'});
 	$raw_body = $page_array->{'query'}->{'pages'}->{$cate_mem_pageid}->{'revisions'}[0]->{'*'};
 	$page->{$key}->{'category'} = extractCategory($raw_body);
-	$page->{$key}->{'body'} = formatBody($raw_body);
+	$page->{$key}->{'body'} = extractBody($raw_body);
 }
 
 $pdf = new PDF_Japanese('P', 'mm', 'A4');

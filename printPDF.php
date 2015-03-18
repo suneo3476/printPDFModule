@@ -26,7 +26,6 @@ function extractTitle($str){
         else
             return 'missing title';
     }
-
 }
 function extractCategory($str){
     preg_match_all('/\[\[Category:(.+?)\]\]/u', $str, $matches);
@@ -84,7 +83,6 @@ function outputTitle($pdf,$title){
     }
     return 1;
 }
-
 function outputBody($pdf,$body){
     $len = mb_strlen($body, 'SJIS');
     $let = 0;
@@ -113,7 +111,6 @@ function outputBody($pdf,$body){
         }
     }
 }
-
 function confirmPartialBody($value){
     if(preg_match('/^'.toUTF8('ƒJƒeƒSƒŠ').':.+/u', $value->{'title'})==1){
         return true;

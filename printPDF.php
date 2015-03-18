@@ -1,4 +1,5 @@
 <?php
+//変更テスト
 ini_set('display_erros',1);
 include_once('japanese.php');
 

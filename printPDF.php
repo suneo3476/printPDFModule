@@ -36,9 +36,12 @@ function extractCategory($str){
 }
 function extractBody($str){
     $str = mb_convert_kana($str,'s');
-    $str = preg_replace('/<\/?blockquote>/u', toUTF8('Å@'), $str);
+    $str = preg_replace('/<blockquote>/u', toUTF8('--------------------------------------------'), $str);
+    $str = preg_replace('/<\/blockquote>/u', toUTF8('--------------------------------------------'), $str);
+//    $str = preg_replace('/'.toUTF8('ÅyéQçlï∂å£Åz').'/u', toUTF8('--------------------------------------------'), $str);
+//    $str = preg_replace('/'.toUTF8('ÅyãríçÅz').'/u', toUTF8('--------------------------------------------'), $str);
+    $str = preg_replace('/\[\[.+?\]\]/u', toUTF8('Å@'), $str);
     $str = preg_replace('/\r\n|\r|\n{1,}/u', toUTF8('Å@'), $str);
-    $str = preg_replace('/\[\[.+?\]\]/u', '', $str);
     $str = preg_replace('/<<.+?>>/u', '', $str);
     return $str;
 }
@@ -140,7 +143,7 @@ function run(){
         $page_api = 'http://media.cs.inf.shizuoka.ac.jp/api.php?format=json&action=query&prop=revisions&rvprop=content&pageids=';
         $page_json = file_get_contents($page_api . $cate_mem_pageid);
         $page_array = json_decode($page_json);
-        //    dp($page_array);
+//            dp($page_array);
         $page->{$key} = new stdClass();
         $page->{$key}->{'full_title'} = $page_array->{'query'}->{'pages'}->{$cate_mem_pageid}->{'title'};
         $page->{$key}->{'author'} = extractAuthor($page->{$key}->{'full_title'});
